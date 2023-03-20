@@ -1,0 +1,28 @@
+---
+- name: User name & password ask
+  hosts: all
+  
+  vars_prompt:
+    - name: "user_name"		#username var
+      prompt: "Username"	#help display
+      private: false		#show input
+      
+    - name: "user_pass"		#password var
+      prompt: "Password"	#help display
+      private: true		#don't show input
+
+  tasks:
+    - name: "Login to user"
+      ansible.builtin.user:
+        name: "{{ user_name }}"		#use earlier name variable
+          notify:
+            - username check
+        password: "{{ user_pass }}"	#use earlier pass variable
+      become: true			#become that input user with pass
+
+  handler:
+    - name: username check
+      ansible.builtin.user:
+        name: "{{ user_name }}"
+        state: present
+    
