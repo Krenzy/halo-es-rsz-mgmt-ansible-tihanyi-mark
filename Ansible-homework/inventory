@@ -1,0 +1,11 @@
+[Rhel9-workstation]
+workstation1
+
+[servera]
+servera.example.com
+
+[serverb]
+serverb.example.com
+
+[centOS7-workstation]
+workstation2

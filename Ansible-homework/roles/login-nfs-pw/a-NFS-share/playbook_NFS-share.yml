@@ -1,0 +1,34 @@
+---
+- name: NFS share mount
+  hosts: all
+  become: true
+  
+  vars:
+    mynfs: "10.0.2.15:/nfs/share"	#master NFS folder
+    mountpoint: "/data/comp/"		#host NFS folder
+    permission: '0777'			#mount permission
+    myopts: 'rw,sync'			#mount mode
+    
+  tasks:
+    - name: NFS utils present?
+      ansible.builtin.dnf: 		#ansible dnf install modul
+        name:
+          - nfs-utils			#nfs-utils is present?
+          - nfs4-acl-tools		#nfs4-acl-tools present?
+        state: present
+      when: ansible_os_family == 'RedHat'
+      
+    - name: Mount point exist check
+      ansible.builtin.file: 		#ansible file handler modul
+        path: "{{ mountpoint }}"	#mountpoint var
+        state: directory
+        mode: "{{ permission }}"	#permission var
+    
+    - name: NFS share mount
+      ansible.posix.mount: 		#ansible mount modul
+        src: "{{ mynfs }}"		#mynfs var
+        path: "{{ mountpoint }}"	#mountpoint var
+        fstype: nfs
+        opts: "{{ myopts }}"		#myopts var
+        state: mounted			#has to be mounted
+        

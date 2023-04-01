@@ -1,0 +1,22 @@
+---
+- name: NFS to fstab checker
+  hosts: all
+  become: true
+  
+  tasks:
+    - name: Reboot if NFS present in fstab
+      ansible.posix.mount:
+      path: "/data/dir"
+      src: "10.0.2.15:/nfs/share"
+      fstype: nfs
+      opts: "rw,sync"
+      state: present
+      notify:
+        - reboot if present
+        
+  handlers:
+    - name: reboot if present
+      ansible.builtin.reboot:
+      msg: "Reboot after 10s caused by Ansible because fstab activation need a restart!"
+      post_reboot_delay: 10
+      
